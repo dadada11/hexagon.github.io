@@ -435,6 +435,7 @@
         // Game state
         let cells = new Array(19).fill(null);
         let selectedCell = null;
+        let lastPosition = 9; // Remember last position for navigation
         let showSums = false;
         let showCorrect = false;
 
@@ -536,6 +537,7 @@
             // If cell has a number, clear it
             if (cells[index] !== null) {
                 cells[index] = null;
+                lastPosition = index; // Remember position
                 updateDisplay();
                 return;
             }
@@ -545,6 +547,7 @@
                 selectedCell = null;
             } else {
                 selectedCell = index;
+                lastPosition = index; // Remember position
             }
             updateDisplay();
         }
@@ -555,6 +558,7 @@
             if (cells.includes(num)) return; // Already used
 
             cells[selectedCell] = num;
+            lastPosition = selectedCell; // Remember position
             selectedCell = null;
             updateDisplay();
             checkVictory();
@@ -617,13 +621,6 @@
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
                 e.preventDefault();
 
-                // If no cell selected, start at center (cell 9)
-                if (selectedCell === null) {
-                    selectedCell = 9;
-                    updateDisplay();
-                    return;
-                }
-
                 const directionMap = {
                     'ArrowLeft': 'left',
                     'ArrowRight': 'right',
@@ -631,9 +628,17 @@
                     'ArrowUp': 'up'
                 };
 
-                const neighbor = getNeighbor(selectedCell, directionMap[key]);
+                // Start from last position if no cell selected
+                const startCell = selectedCell !== null ? selectedCell : lastPosition;
+                const neighbor = getNeighbor(startCell, directionMap[key]);
+
                 if (neighbor !== null) {
                     selectedCell = neighbor;
+                    lastPosition = neighbor;
+                    updateDisplay();
+                } else if (selectedCell === null) {
+                    // If can't move, at least select the last position
+                    selectedCell = lastPosition;
                     updateDisplay();
                 }
                 return;
@@ -666,6 +671,7 @@
 
                 if (num >= 1 && num <= 19 && !cells.includes(num)) {
                     cells[selectedCell] = num;
+                    lastPosition = selectedCell; // Remember where we entered
                     selectedCell = null;
                     updateDisplay();
                     checkVictory();
