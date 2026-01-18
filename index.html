@@ -300,10 +300,38 @@
             color: #2d5a2d;
             margin-bottom: 25px;
         }
+
+        .dedication {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            background: rgba(255, 252, 245, 0.95);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #c9b896;
+            font-size: 14px;
+            color: #5c4a3a;
+            text-align: right;
+            box-shadow: 0 2px 8px rgba(74, 60, 42, 0.15);
+            line-height: 1.4;
+        }
+
+        .dedication .by {
+            font-weight: 500;
+        }
+
+        .dedication .for {
+            font-weight: 600;
+            color: #2d5a2d;
+        }
     </style>
 </head>
 
 <body>
+    <div class="dedication">
+        <div class="by">Created by: Vivek</div>
+        <div class="for">For: My Dear Thatha</div>
+    </div>
     <h1>Magic Hexagon Puzzle</h1>
     <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click a number from the box. Click a filled hexagon to clear it.</p>
     <p class="instructions goal">Goal: Make all 15 rows sum to 38</p>
