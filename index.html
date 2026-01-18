@@ -11,8 +11,9 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #a8c9a5 0%, #8fb88a 25%, #d4c9a8 50%, #c9b896 75%, #a8c9a5 100%);
+            background-attachment: fixed;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
@@ -20,8 +21,9 @@
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #4a5d4a;
             margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
 
         .container {
@@ -34,15 +36,44 @@
 
         .hexagon-grid {
             position: relative;
-            width: 400px;
-            height: 450px;
+            width: 500px;
+            height: 500px;
+            margin: 20px;
+        }
+
+        .edge-sum {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            color: #5c4a3a;
+            background: rgba(255, 252, 245, 0.9);
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #c9b896;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .edge-sum.visible {
+            display: block;
+        }
+
+        .edge-sum.correct {
+            background: #6ab06a;
+            color: #fff;
+            border-color: #5a9a5a;
+        }
+
+        .edge-sum.incomplete {
+            background: rgba(255, 252, 245, 0.7);
+            color: #8b7355;
         }
 
         .hex {
             position: absolute;
             width: 70px;
             height: 80px;
-            background: #fff;
+            background: #f5f0e1;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             align-items: center;
@@ -51,145 +82,151 @@
             font-weight: bold;
             cursor: pointer;
             border: none;
-            transition: background-color 0.2s;
-            color: #333;
+            transition: background-color 0.2s, transform 0.1s;
+            color: #4a3c2a;
         }
 
         .hex:hover {
-            background: #e0e0e0;
+            background: #e8e0cc;
+            transform: scale(1.05);
         }
 
         .hex.selected {
-            background: #a0d0ff;
+            background: #7eb8e0;
+            color: #1a3a5c;
         }
 
         .hex.filled {
-            background: #d0ffd0;
+            background: #c9734a;
+            color: #fff;
+        }
+
+        .hex.filled:hover {
+            background: #b5623d;
         }
 
         .hex.filled.selected {
-            background: #80c0ff;
+            background: #5a9fd4;
+            color: #fff;
         }
 
         .hex.correct-row {
-            background: #90ee90;
+            background: #6ab06a;
+            color: #fff;
         }
 
         .hex.correct-row.selected {
-            background: #70c070;
+            background: #5a9a5a;
+            color: #fff;
         }
 
         .hex-border {
             position: absolute;
             width: 74px;
             height: 84px;
-            background: #666;
+            background: #5c4a3a;
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             z-index: -1;
         }
 
         .sidebar {
-            background: #fff;
+            background: rgba(255, 252, 245, 0.95);
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(74, 60, 42, 0.2);
+            min-width: 220px;
+            border: 2px solid #c9b896;
         }
 
         .sidebar h2 {
             margin-top: 0;
-            color: #333;
+            color: #4a5d4a;
             font-size: 18px;
+            border-bottom: 2px solid #c9b896;
+            padding-bottom: 8px;
         }
 
-        .unused-numbers {
+        .number-controls-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 15px;
             margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            background: #e8e0cc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 2px solid #c9b896;
         }
 
         .unused-num {
-            width: 36px;
-            height: 36px;
-            background: #e8e8e8;
-            border: 2px solid #999;
-            border-radius: 4px;
+            width: 44px;
+            height: 44px;
+            background: #f5f0e1;
+            border: 2px solid #8b7355;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.2s;
+            color: #4a3c2a;
         }
 
         .unused-num:hover {
-            background: #d0d0d0;
+            background: #c9734a;
+            color: #fff;
+            border-color: #a85a3a;
+            transform: scale(1.1);
         }
 
         .unused-num.used {
-            background: #ccc;
-            color: #999;
+            background: #d4cbb8;
+            color: #a09080;
             cursor: default;
-            border-color: #bbb;
+            border-color: #b8a890;
+        }
+
+        .unused-num.used:hover {
+            transform: none;
+            background: #d4cbb8;
+            color: #a09080;
         }
 
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
         }
 
         .controls button {
-            padding: 10px 15px;
-            font-size: 14px;
+            padding: 8px 12px;
+            font-size: 13px;
             cursor: pointer;
-            border: 2px solid #666;
-            border-radius: 4px;
-            background: #fff;
+            border: 2px solid #5c4a3a;
+            border-radius: 6px;
+            background: #f5f0e1;
+            color: #4a3c2a;
             transition: all 0.2s;
+            font-weight: 500;
+            white-space: nowrap;
         }
 
         .controls button:hover {
-            background: #e8e8e8;
+            background: #e8e0cc;
         }
 
         .controls button.active {
-            background: #666;
-            color: #fff;
+            background: #5c4a3a;
+            color: #f5f0e1;
         }
 
-        .sums-display {
-            margin-top: 15px;
-            font-size: 14px;
-            display: none;
-        }
-
-        .sums-display.visible {
-            display: block;
-        }
-
-        .sums-display h3 {
-            margin: 10px 0 5px 0;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .sum-row {
-            padding: 3px 0;
-            font-family: monospace;
-        }
-
-        .sum-row.correct {
-            color: #228b22;
-            font-weight: bold;
-        }
-
-        .sum-row.incorrect {
-            color: #333;
-        }
 
         .victory {
             display: none;
@@ -198,7 +235,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(74, 60, 42, 0.8);
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -209,21 +246,23 @@
         }
 
         .victory-content {
-            background: #fff;
+            background: linear-gradient(135deg, #f5f0e1, #e8e0cc);
             padding: 40px;
             border-radius: 16px;
             text-align: center;
+            border: 3px solid #8b7355;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         }
 
         .victory-content h2 {
-            color: #228b22;
+            color: #2d7a2d;
             font-size: 32px;
             margin-bottom: 10px;
         }
 
         .victory-content p {
             font-size: 18px;
-            color: #555;
+            color: #5c4a3a;
         }
 
         .victory-content button {
@@ -231,48 +270,58 @@
             padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
-            border: 2px solid #228b22;
-            border-radius: 4px;
-            background: #228b22;
+            border: 2px solid #2d7a2d;
+            border-radius: 6px;
+            background: #2d7a2d;
             color: #fff;
+            transition: all 0.2s;
+        }
+
+        .victory-content button:hover {
+            background: #236b23;
         }
 
         .instructions {
             text-align: center;
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
+            color: #3a4a3a;
+            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+            line-height: 1.5;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .instructions.goal {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2d5a2d;
+            margin-bottom: 25px;
         }
     </style>
 </head>
 
 <body>
     <h1>Magic Hexagon Puzzle</h1>
-    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click an unused number. Click a
-        filled hexagon to clear it.</p>
-    <p class="instructions">Goal: Each of the 15 rows should sum up to 38.</p>
+    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click a number from the box. Click a filled hexagon to clear it.</p>
+    <p class="instructions goal">Goal: Make all 15 rows sum to 38</p>
 
     <div class="container">
         <div class="hexagon-grid" id="grid"></div>
 
         <div class="sidebar">
-            <h2>Unused Numbers</h2>
-            <div class="unused-numbers" id="unused"></div>
-
-            <div class="controls">
-                <button id="showSumsBtn">Show All Sums</button>
-                <button id="showCorrectBtn">Highlight Correct Rows</button>
-                <button id="clearAllBtn">Clear All</button>
+            <h2>Numbers</h2>
+            <div class="number-controls-row">
+                <div class="number-grid" id="unused"></div>
+                <div class="controls">
+                    <button id="showSumsBtn">Show Sums</button>
+                    <button id="showCorrectBtn">Highlight Correct</button>
+                    <button id="clearAllBtn">Clear All</button>
+                </div>
             </div>
 
-            <div class="sums-display" id="sumsDisplay">
-                <h3>Horizontal Rows:</h3>
-                <div id="horizontalSums"></div>
-                <h3>Diagonal (NE-SW):</h3>
-                <div id="diagonal1Sums"></div>
-                <h3>Diagonal (NW-SE):</h3>
-                <div id="diagonal2Sums"></div>
-            </div>
         </div>
     </div>
 
@@ -359,14 +408,21 @@
         let showSums = false;
         let showCorrect = false;
 
+        // Get position of a cell
+        function getCellPosition(index) {
+            const pos = cellPositions[index];
+            const x = (pos.col + rowOffsets[pos.row]) * horizontalSpacing + 50;
+            const y = pos.row * verticalSpacing + 40;
+            return { x, y };
+        }
+
         // Initialize grid
         function initGrid() {
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
 
             cellPositions.forEach((pos, index) => {
-                const x = (pos.col + rowOffsets[pos.row]) * horizontalSpacing + 50;
-                const y = pos.row * verticalSpacing + 20;
+                const { x, y } = getCellPosition(index);
 
                 // Border element
                 const border = document.createElement('div');
@@ -383,6 +439,50 @@
                 hex.style.top = y + 'px';
                 hex.onclick = () => handleCellClick(index);
                 grid.appendChild(hex);
+            });
+
+            // Create edge sum labels
+            initEdgeSums();
+        }
+
+        // Initialize edge sum labels
+        function initEdgeSums() {
+            const grid = document.getElementById('grid');
+
+            // Horizontal rows - place on RIGHT side
+            rows.horizontal.forEach((row, i) => {
+                const lastCell = row[row.length - 1];
+                const pos = getCellPosition(lastCell);
+                const label = document.createElement('div');
+                label.className = 'edge-sum';
+                label.id = `sum-h-${i}`;
+                label.style.left = (pos.x + hexWidth + 8) + 'px';
+                label.style.top = (pos.y + hexHeight / 2 - 12) + 'px';
+                grid.appendChild(label);
+            });
+
+            // Diagonal1 (NW to SE) - place at BOTTOM-LEFT of row
+            rows.diagonal1.forEach((row, i) => {
+                const lastCell = row[row.length - 1];
+                const pos = getCellPosition(lastCell);
+                const label = document.createElement('div');
+                label.className = 'edge-sum';
+                label.id = `sum-d1-${i}`;
+                label.style.left = (pos.x - 5) + 'px';
+                label.style.top = (pos.y + hexHeight - 5) + 'px';
+                grid.appendChild(label);
+            });
+
+            // Diagonal2 (NE to SW) - place at BOTTOM-RIGHT of row
+            rows.diagonal2.forEach((row, i) => {
+                const lastCell = row[row.length - 1];
+                const pos = getCellPosition(lastCell);
+                const label = document.createElement('div');
+                label.className = 'edge-sum';
+                label.id = `sum-d2-${i}`;
+                label.style.left = (pos.x + hexWidth - 20) + 'px';
+                label.style.top = (pos.y + hexHeight - 5) + 'px';
+                grid.appendChild(label);
             });
         }
 
@@ -510,26 +610,24 @@
         }
 
         function updateSumsDisplay() {
-            const display = document.getElementById('sumsDisplay');
-            display.classList.toggle('visible', showSums);
+            // Update edge sum labels - only show for complete rows
+            function updateLabel(id, row) {
+                const label = document.getElementById(id);
+                if (!label) return;
 
-            if (!showSums) return;
-
-            function formatRow(row, index) {
                 const sum = getRowSum(row);
                 const complete = isRowComplete(row);
                 const correct = complete && sum === 38;
-                const values = row.map(i => cells[i] !== null ? cells[i].toString().padStart(2) : '__').join(' + ');
-                const className = correct ? 'correct' : 'incorrect';
-                return `<div class="sum-row ${className}">${values} = ${complete ? sum : '?'}</div>`;
+
+                label.textContent = sum;
+                label.classList.toggle('visible', showSums && complete);
+                label.classList.toggle('correct', correct);
+                label.classList.remove('incomplete');
             }
 
-            document.getElementById('horizontalSums').innerHTML =
-                rows.horizontal.map((r, i) => formatRow(r, i)).join('');
-            document.getElementById('diagonal1Sums').innerHTML =
-                rows.diagonal1.map((r, i) => formatRow(r, i)).join('');
-            document.getElementById('diagonal2Sums').innerHTML =
-                rows.diagonal2.map((r, i) => formatRow(r, i)).join('');
+            rows.horizontal.forEach((row, i) => updateLabel(`sum-h-${i}`, row));
+            rows.diagonal1.forEach((row, i) => updateLabel(`sum-d1-${i}`, row));
+            rows.diagonal2.forEach((row, i) => updateLabel(`sum-d2-${i}`, row));
         }
 
         function checkVictory() {
