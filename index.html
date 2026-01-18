@@ -560,12 +560,88 @@
             checkVictory();
         }
 
+        // Navigation: get cell info (row and column within row)
+        const rowSizes = [3, 4, 5, 4, 3];
+        const rowStarts = [0, 3, 7, 12, 16];
+
+        function getCellInfo(index) {
+            for (let r = 0; r < 5; r++) {
+                if (index >= rowStarts[r] && index < rowStarts[r] + rowSizes[r]) {
+                    return { row: r, col: index - rowStarts[r] };
+                }
+            }
+            return null;
+        }
+
+        function getCellIndex(row, col) {
+            if (row < 0 || row > 4) return null;
+            if (col < 0 || col >= rowSizes[row]) return null;
+            return rowStarts[row] + col;
+        }
+
+        function getNeighbor(index, direction) {
+            const info = getCellInfo(index);
+            if (!info) return null;
+            const { row, col } = info;
+
+            switch (direction) {
+                case 'left':
+                    return getCellIndex(row, col - 1);
+                case 'right':
+                    return getCellIndex(row, col + 1);
+                case 'down': // Down-left diagonal
+                    if (row < 2) {
+                        // Upper half: same col goes down-left
+                        return getCellIndex(row + 1, col);
+                    } else {
+                        // Lower half: col-1 goes down-left
+                        return getCellIndex(row + 1, col - 1);
+                    }
+                case 'up': // Up-right diagonal
+                    if (row <= 2) {
+                        // Upper half or middle: col+1 goes up-right
+                        return getCellIndex(row - 1, col);
+                    } else {
+                        // Lower half: same col goes up-right
+                        return getCellIndex(row - 1, col + 1);
+                    }
+            }
+            return null;
+        }
+
         // Handle keyboard input
         document.addEventListener('keydown', (e) => {
+            const key = e.key;
+
+            // Handle arrow keys for navigation
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+                e.preventDefault();
+
+                // If no cell selected, start at center (cell 9)
+                if (selectedCell === null) {
+                    selectedCell = 9;
+                    updateDisplay();
+                    return;
+                }
+
+                const directionMap = {
+                    'ArrowLeft': 'left',
+                    'ArrowRight': 'right',
+                    'ArrowDown': 'down',
+                    'ArrowUp': 'up'
+                };
+
+                const neighbor = getNeighbor(selectedCell, directionMap[key]);
+                if (neighbor !== null) {
+                    selectedCell = neighbor;
+                    updateDisplay();
+                }
+                return;
+            }
+
             if (selectedCell === null) return;
 
             // Handle number keys
-            const key = e.key;
             if (key >= '0' && key <= '9') {
                 handleNumberInput(key);
             } else if (key === 'Backspace' || key === 'Delete') {
