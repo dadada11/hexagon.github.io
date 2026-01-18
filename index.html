@@ -6,22 +6,203 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Hexagon Puzzle</title>
     <style>
+        /* Theme: Earth (default) */
+        :root, [data-theme="earth"] {
+            --bg-gradient: linear-gradient(135deg, #5c6b4a 0%, #4a5a3a 25%, #6b5d4a 50%, #5a4d3a 75%, #4a5c3a 100%);
+            --title-color: #f5f0e1;
+            --text-color: #e8e0cc;
+            --goal-color: #c9e0a0;
+            --hex-bg: #f5f0e1;
+            --hex-hover: #e8e0cc;
+            --hex-text: #4a3c2a;
+            --hex-selected: #d9c9a0;
+            --hex-selected-text: #3a3020;
+            --hex-filled: #2a7d7d;
+            --hex-filled-hover: #236969;
+            --hex-filled-selected: #3a9999;
+            --hex-correct: #6ab06a;
+            --hex-correct-selected: #5a9a5a;
+            --hex-border: #5c4a3a;
+            --panel-bg: rgba(255, 252, 245, 0.95);
+            --panel-border: #c9b896;
+            --panel-title: #4a5d4a;
+            --grid-bg: #e8e0cc;
+            --num-bg: #f5f0e1;
+            --num-border: #8b7355;
+            --num-text: #4a3c2a;
+            --num-used-bg: #d4cbb8;
+            --num-used-text: #a09080;
+            --btn-bg: #f5f0e1;
+            --btn-border: #5c4a3a;
+            --btn-text: #4a3c2a;
+            --btn-hover: #e8e0cc;
+            --btn-active-bg: #5c4a3a;
+            --btn-active-text: #f5f0e1;
+            --victory-overlay: rgba(74, 60, 42, 0.8);
+            --victory-bg: linear-gradient(135deg, #f5f0e1, #e8e0cc);
+            --victory-border: #8b7355;
+            --victory-title: #2d7a2d;
+            --victory-text: #5c4a3a;
+            --victory-btn: #2d7a2d;
+            --sum-bg: rgba(255, 252, 245, 0.9);
+            --sum-text: #5c4a3a;
+            --sum-border: #c9b896;
+            --dedication-by: #4a3c2a;
+            --dedication-for: #2d5a2d;
+        }
+
+        /* Theme: Modern Dark */
+        [data-theme="modern"] {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+            --title-color: #eee;
+            --text-color: #ccc;
+            --goal-color: #00d9ff;
+            --hex-bg: #2d2d44;
+            --hex-hover: #3d3d5c;
+            --hex-text: #eee;
+            --hex-selected: #4a4a6a;
+            --hex-selected-text: #fff;
+            --hex-filled: #00b4d8;
+            --hex-filled-hover: #0096c7;
+            --hex-filled-selected: #48cae4;
+            --hex-correct: #00c853;
+            --hex-correct-selected: #00a844;
+            --hex-border: #0f0f1a;
+            --panel-bg: rgba(30, 30, 50, 0.95);
+            --panel-border: #4a4a6a;
+            --panel-title: #00d9ff;
+            --grid-bg: #252540;
+            --num-bg: #2d2d44;
+            --num-border: #4a4a6a;
+            --num-text: #eee;
+            --num-used-bg: #1a1a2e;
+            --num-used-text: #666;
+            --btn-bg: #2d2d44;
+            --btn-border: #4a4a6a;
+            --btn-text: #eee;
+            --btn-hover: #3d3d5c;
+            --btn-active-bg: #00b4d8;
+            --btn-active-text: #000;
+            --victory-overlay: rgba(0, 0, 0, 0.85);
+            --victory-bg: linear-gradient(135deg, #1e1e32, #2d2d44);
+            --victory-border: #00d9ff;
+            --victory-title: #00d9ff;
+            --victory-text: #ccc;
+            --victory-btn: #00b4d8;
+            --sum-bg: rgba(30, 30, 50, 0.9);
+            --sum-text: #ccc;
+            --sum-border: #4a4a6a;
+            --dedication-by: #ccc;
+            --dedication-for: #00d9ff;
+        }
+
+        /* Theme: Sunset Warm */
+        [data-theme="sunset"] {
+            --bg-gradient: linear-gradient(135deg, #4a1a2c 0%, #6b2d3a 25%, #8b3a2a 50%, #6b2d3a 75%, #4a1a2c 100%);
+            --title-color: #ffe4c4;
+            --text-color: #f0d0b0;
+            --goal-color: #ffd700;
+            --hex-bg: #f5e6d3;
+            --hex-hover: #edd8c0;
+            --hex-text: #4a2a1a;
+            --hex-selected: #ffd699;
+            --hex-selected-text: #4a2a1a;
+            --hex-filled: #e85d3b;
+            --hex-filled-hover: #d04a2a;
+            --hex-filled-selected: #ff7f50;
+            --hex-correct: #f0a030;
+            --hex-correct-selected: #d89020;
+            --hex-border: #3a1a1a;
+            --panel-bg: rgba(255, 245, 235, 0.95);
+            --panel-border: #d4a574;
+            --panel-title: #8b3a2a;
+            --grid-bg: #edd8c0;
+            --num-bg: #f5e6d3;
+            --num-border: #c49464;
+            --num-text: #4a2a1a;
+            --num-used-bg: #ddc8b0;
+            --num-used-text: #a08060;
+            --btn-bg: #f5e6d3;
+            --btn-border: #8b3a2a;
+            --btn-text: #4a2a1a;
+            --btn-hover: #edd8c0;
+            --btn-active-bg: #e85d3b;
+            --btn-active-text: #fff;
+            --victory-overlay: rgba(74, 26, 44, 0.85);
+            --victory-bg: linear-gradient(135deg, #f5e6d3, #edd8c0);
+            --victory-border: #d4a574;
+            --victory-title: #e85d3b;
+            --victory-text: #4a2a1a;
+            --victory-btn: #e85d3b;
+            --sum-bg: rgba(255, 245, 235, 0.9);
+            --sum-text: #4a2a1a;
+            --sum-border: #d4a574;
+            --dedication-by: #4a2a1a;
+            --dedication-for: #e85d3b;
+        }
+
+        /* Theme: Ocean Blue */
+        [data-theme="ocean"] {
+            --bg-gradient: linear-gradient(135deg, #0a2a3a 0%, #0d3d5c 25%, #0a4a5a 50%, #0d3d5c 75%, #0a2a3a 100%);
+            --title-color: #e0f4ff;
+            --text-color: #b0d8f0;
+            --goal-color: #7fdbff;
+            --hex-bg: #e8f4f8;
+            --hex-hover: #d0e8f0;
+            --hex-text: #1a3a4a;
+            --hex-selected: #a0d8e8;
+            --hex-selected-text: #0a2a3a;
+            --hex-filled: #2a9d8f;
+            --hex-filled-hover: #238b7f;
+            --hex-filled-selected: #3ab0a0;
+            --hex-correct: #48b0d0;
+            --hex-correct-selected: #3898b8;
+            --hex-border: #0a1a2a;
+            --panel-bg: rgba(230, 244, 250, 0.95);
+            --panel-border: #80c0d8;
+            --panel-title: #0d5c7a;
+            --grid-bg: #d0e8f0;
+            --num-bg: #e8f4f8;
+            --num-border: #60a0c0;
+            --num-text: #1a3a4a;
+            --num-used-bg: #c0d8e0;
+            --num-used-text: #6090a0;
+            --btn-bg: #e8f4f8;
+            --btn-border: #2a7a9a;
+            --btn-text: #1a3a4a;
+            --btn-hover: #d0e8f0;
+            --btn-active-bg: #2a9d8f;
+            --btn-active-text: #fff;
+            --victory-overlay: rgba(10, 42, 58, 0.85);
+            --victory-bg: linear-gradient(135deg, #e8f4f8, #d0e8f0);
+            --victory-border: #80c0d8;
+            --victory-title: #2a9d8f;
+            --victory-text: #1a3a4a;
+            --victory-btn: #2a9d8f;
+            --sum-bg: rgba(230, 244, 250, 0.9);
+            --sum-text: #1a3a4a;
+            --sum-border: #80c0d8;
+            --dedication-by: #1a3a4a;
+            --dedication-for: #2a9d8f;
+        }
+
         * {
             box-sizing: border-box;
         }
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #5c6b4a 0%, #4a5a3a 25%, #6b5d4a 50%, #5a4d3a 75%, #4a5c3a 100%);
+            background: var(--bg-gradient);
             background-attachment: fixed;
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            transition: background 0.3s;
         }
 
         h1 {
             text-align: center;
-            color: #f5f0e1;
+            color: var(--title-color);
             margin-bottom: 20px;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
         }
@@ -44,13 +225,14 @@
             position: absolute;
             font-size: 14px;
             font-weight: bold;
-            color: #5c4a3a;
-            background: rgba(255, 252, 245, 0.9);
+            color: var(--sum-text);
+            background: var(--sum-bg);
             padding: 3px 6px;
             border-radius: 4px;
-            border: 1px solid #c9b896;
+            border: 1px solid var(--sum-border);
             display: none;
             white-space: nowrap;
+            transition: all 0.2s;
         }
 
         .edge-sum.visible {
@@ -58,21 +240,16 @@
         }
 
         .edge-sum.correct {
-            background: #6ab06a;
+            background: var(--hex-correct);
             color: #fff;
-            border-color: #5a9a5a;
-        }
-
-        .edge-sum.incomplete {
-            background: rgba(255, 252, 245, 0.7);
-            color: #8b7355;
+            border-color: var(--hex-correct-selected);
         }
 
         .hex {
             position: absolute;
             width: 70px;
             height: 80px;
-            background: #f5f0e1;
+            background: var(--hex-bg);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             display: flex;
             align-items: center;
@@ -82,40 +259,40 @@
             cursor: pointer;
             border: none;
             transition: background-color 0.2s, transform 0.1s;
-            color: #4a3c2a;
+            color: var(--hex-text);
         }
 
         .hex:hover {
-            background: #e8e0cc;
+            background: var(--hex-hover);
             transform: scale(1.05);
         }
 
         .hex.selected {
-            background: #d9c9a0;
-            color: #3a3020;
+            background: var(--hex-selected);
+            color: var(--hex-selected-text);
         }
 
         .hex.filled {
-            background: #2a7d7d;
+            background: var(--hex-filled);
             color: #fff;
         }
 
         .hex.filled:hover {
-            background: #236969;
+            background: var(--hex-filled-hover);
         }
 
         .hex.filled.selected {
-            background: #3a9999;
+            background: var(--hex-filled-selected);
             color: #fff;
         }
 
         .hex.correct-row {
-            background: #6ab06a;
+            background: var(--hex-correct);
             color: #fff;
         }
 
         .hex.correct-row.selected {
-            background: #5a9a5a;
+            background: var(--hex-correct-selected);
             color: #fff;
         }
 
@@ -123,26 +300,27 @@
             position: absolute;
             width: 74px;
             height: 84px;
-            background: #5c4a3a;
+            background: var(--hex-border);
             clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
             z-index: -1;
         }
 
         .sidebar {
-            background: rgba(255, 252, 245, 0.95);
+            background: var(--panel-bg);
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(74, 60, 42, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             min-width: 220px;
-            border: 2px solid #c9b896;
+            border: 2px solid var(--panel-border);
             margin-top: 35px;
+            transition: all 0.2s;
         }
 
         .sidebar h2 {
             margin-top: 0;
-            color: #4a5d4a;
+            color: var(--panel-title);
             font-size: 18px;
-            border-bottom: 2px solid #c9b896;
+            border-bottom: 2px solid var(--panel-border);
             padding-bottom: 8px;
         }
 
@@ -157,17 +335,17 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
-            background: #e8e0cc;
+            background: var(--grid-bg);
             padding: 12px;
             border-radius: 10px;
-            border: 2px solid #c9b896;
+            border: 2px solid var(--panel-border);
         }
 
         .unused-num {
             width: 44px;
             height: 44px;
-            background: #f5f0e1;
-            border: 2px solid #8b7355;
+            background: var(--num-bg);
+            border: 2px solid var(--num-border);
             border-radius: 8px;
             display: flex;
             align-items: center;
@@ -176,27 +354,27 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.2s;
-            color: #4a3c2a;
+            color: var(--num-text);
         }
 
         .unused-num:hover {
-            background: #2a7d7d;
+            background: var(--hex-filled);
             color: #fff;
-            border-color: #236969;
+            border-color: var(--hex-filled-hover);
             transform: scale(1.1);
         }
 
         .unused-num.used {
-            background: #d4cbb8;
-            color: #a09080;
+            background: var(--num-used-bg);
+            color: var(--num-used-text);
             cursor: default;
-            border-color: #b8a890;
+            border-color: var(--num-used-bg);
         }
 
         .unused-num.used:hover {
             transform: none;
-            background: #d4cbb8;
-            color: #a09080;
+            background: var(--num-used-bg);
+            color: var(--num-used-text);
         }
 
         .controls {
@@ -209,24 +387,23 @@
             padding: 8px 12px;
             font-size: 13px;
             cursor: pointer;
-            border: 2px solid #5c4a3a;
+            border: 2px solid var(--btn-border);
             border-radius: 6px;
-            background: #f5f0e1;
-            color: #4a3c2a;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             transition: all 0.2s;
             font-weight: 500;
             white-space: nowrap;
         }
 
         .controls button:hover {
-            background: #e8e0cc;
+            background: var(--btn-hover);
         }
 
         .controls button.active {
-            background: #5c4a3a;
-            color: #f5f0e1;
+            background: var(--btn-active-bg);
+            color: var(--btn-active-text);
         }
-
 
         .victory {
             display: none;
@@ -235,7 +412,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(74, 60, 42, 0.8);
+            background: var(--victory-overlay);
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -246,23 +423,23 @@
         }
 
         .victory-content {
-            background: linear-gradient(135deg, #f5f0e1, #e8e0cc);
+            background: var(--victory-bg);
             padding: 40px;
             border-radius: 16px;
             text-align: center;
-            border: 3px solid #8b7355;
+            border: 3px solid var(--victory-border);
             box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         }
 
         .victory-content h2 {
-            color: #2d7a2d;
+            color: var(--victory-title);
             font-size: 32px;
             margin-bottom: 10px;
         }
 
         .victory-content p {
             font-size: 18px;
-            color: #5c4a3a;
+            color: var(--victory-text);
         }
 
         .victory-content button {
@@ -270,20 +447,20 @@
             padding: 12px 24px;
             font-size: 16px;
             cursor: pointer;
-            border: 2px solid #2d7a2d;
+            border: 2px solid var(--victory-btn);
             border-radius: 6px;
-            background: #2d7a2d;
+            background: var(--victory-btn);
             color: #fff;
             transition: all 0.2s;
         }
 
         .victory-content button:hover {
-            background: #236b23;
+            filter: brightness(0.9);
         }
 
         .instructions {
             text-align: center;
-            color: #e8e0cc;
+            color: var(--text-color);
             margin-bottom: 12px;
             font-size: 18px;
             font-weight: 500;
@@ -297,7 +474,7 @@
         .instructions.goal {
             font-size: 22px;
             font-weight: 600;
-            color: #c9e0a0;
+            color: var(--goal-color);
             margin-bottom: 25px;
         }
 
@@ -305,37 +482,89 @@
             position: fixed;
             top: 15px;
             right: 20px;
-            background: rgba(255, 252, 245, 0.95);
+            background: var(--panel-bg);
             padding: 10px 15px;
             border-radius: 8px;
-            border: 2px solid #c9b896;
+            border: 2px solid var(--panel-border);
             font-size: 14px;
-            color: #5c4a3a;
+            color: var(--sum-text);
             text-align: right;
-            box-shadow: 0 2px 8px rgba(74, 60, 42, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             line-height: 1.4;
+            transition: all 0.2s;
         }
 
         .dedication .by {
             font-weight: 600;
-            color: #4a3c2a;
+            color: var(--dedication-by);
             margin-bottom: 4px;
         }
 
         .dedication .for {
             font-weight: 600;
-            color: #2d5a2d;
+            color: var(--dedication-for);
+        }
+
+        .theme-selector {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .theme-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.15);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .theme-btn.active {
+            border-color: #fff;
+            transform: scale(1.1);
+        }
+
+        .theme-btn[data-theme="earth"] {
+            background: linear-gradient(135deg, #5c6b4a, #6b5d4a);
+        }
+
+        .theme-btn[data-theme="modern"] {
+            background: linear-gradient(135deg, #1a1a2e, #00b4d8);
+        }
+
+        .theme-btn[data-theme="sunset"] {
+            background: linear-gradient(135deg, #4a1a2c, #e85d3b);
+        }
+
+        .theme-btn[data-theme="ocean"] {
+            background: linear-gradient(135deg, #0a2a3a, #2a9d8f);
         }
     </style>
 </head>
 
 <body>
+    <div class="theme-selector">
+        <button class="theme-btn active" data-theme="earth" title="Earth"></button>
+        <button class="theme-btn" data-theme="modern" title="Modern Dark"></button>
+        <button class="theme-btn" data-theme="sunset" title="Sunset Warm"></button>
+        <button class="theme-btn" data-theme="ocean" title="Ocean Blue"></button>
+    </div>
     <div class="dedication">
         <div class="by">Created by: Vivek</div>
         <div class="for">For: My Dear Thatha</div>
     </div>
     <h1>Magic Hexagon Puzzle</h1>
-    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click a number from the box. Click a filled hexagon to clear it.</p>
+    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click a number from the box. Click a filled hexagon to clear it. Use arrow keys to move across the board.</p>
     <p class="instructions goal">Goal: Make all 15 rows sum to 38</p>
 
     <div class="container">
@@ -773,6 +1002,25 @@
             selectedCell = null;
             updateDisplay();
         };
+
+        // Theme switching
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+            });
+            localStorage.setItem('hexagon-theme', theme);
+        }
+
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.onclick = () => setTheme(btn.getAttribute('data-theme'));
+        });
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('hexagon-theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        }
 
         // Initialize
         initGrid();
