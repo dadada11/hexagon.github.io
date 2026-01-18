@@ -246,6 +246,10 @@
             border-color: var(--hex-correct-selected);
         }
 
+        .edge-sum.incomplete {
+            opacity: 0.7;
+        }
+
         .hex {
             position: absolute;
             width: 70px;
@@ -974,7 +978,7 @@
         }
 
         function updateSumsDisplay() {
-            // Update edge sum labels - only show for complete rows
+            // Update edge sum labels - show for all rows (partial sums for incomplete)
             function updateLabel(id, row) {
                 const label = document.getElementById(id);
                 if (!label) return;
@@ -982,11 +986,12 @@
                 const sum = getRowSum(row);
                 const complete = isRowComplete(row);
                 const correct = complete && sum === 38;
+                const hasAnyValue = row.some(i => cells[i] !== null);
 
                 label.textContent = sum;
-                label.classList.toggle('visible', showSums && complete);
+                label.classList.toggle('visible', showSums && hasAnyValue);
                 label.classList.toggle('correct', correct);
-                label.classList.remove('incomplete');
+                label.classList.toggle('incomplete', !complete && hasAnyValue);
             }
 
             rows.horizontal.forEach((row, i) => updateLabel(`sum-h-${i}`, row));
