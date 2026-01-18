@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Hexagon Puzzle</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hexagon-grid {
+            position: relative;
+            width: 400px;
+            height: 450px;
+        }
+
+        .hex {
+            position: absolute;
+            width: 70px;
+            height: 80px;
+            background: #fff;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+            color: #333;
+        }
+
+        .hex:hover {
+            background: #e0e0e0;
+        }
+
+        .hex.selected {
+            background: #a0d0ff;
+        }
+
+        .hex.filled {
+            background: #d0ffd0;
+        }
+
+        .hex.filled.selected {
+            background: #80c0ff;
+        }
+
+        .hex.correct-row {
+            background: #90ee90;
+        }
+
+        .hex.correct-row.selected {
+            background: #70c070;
+        }
+
+        .hex-border {
+            position: absolute;
+            width: 74px;
+            height: 84px;
+            background: #666;
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            z-index: -1;
+        }
+
+        .sidebar {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .unused-numbers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .unused-num {
+            width: 36px;
+            height: 36px;
+            background: #e8e8e8;
+            border: 2px solid #999;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .unused-num:hover {
+            background: #d0d0d0;
+        }
+
+        .unused-num.used {
+            background: #ccc;
+            color: #999;
+            cursor: default;
+            border-color: #bbb;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .controls button {
+            padding: 10px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 2px solid #666;
+            border-radius: 4px;
+            background: #fff;
+            transition: all 0.2s;
+        }
+
+        .controls button:hover {
+            background: #e8e8e8;
+        }
+
+        .controls button.active {
+            background: #666;
+            color: #fff;
+        }
+
+        .sums-display {
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .sums-display.visible {
+            display: block;
+        }
+
+        .sums-display h3 {
+            margin: 10px 0 5px 0;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .sum-row {
+            padding: 3px 0;
+            font-family: monospace;
+        }
+
+        .sum-row.correct {
+            color: #228b22;
+            font-weight: bold;
+        }
+
+        .sum-row.incorrect {
+            color: #333;
+        }
+
+        .victory {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .victory.show {
+            display: flex;
+        }
+
+        .victory-content {
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .victory-content h2 {
+            color: #228b22;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .victory-content p {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .victory-content button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 2px solid #228b22;
+            border-radius: 4px;
+            background: #228b22;
+            color: #fff;
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Magic Hexagon Puzzle</h1>
+    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click an unused number. Click a
+        filled hexagon to clear it.</p>
+    <p class="instructions">Goal: Each of the 15 rows should sum up to 38.</p>
+
+    <div class="container">
+        <div class="hexagon-grid" id="grid"></div>
+
+        <div class="sidebar">
+            <h2>Unused Numbers</h2>
+            <div class="unused-numbers" id="unused"></div>
+
+            <div class="controls">
+                <button id="showSumsBtn">Show All Sums</button>
+                <button id="showCorrectBtn">Highlight Correct Rows</button>
+                <button id="clearAllBtn">Clear All</button>
+            </div>
+
+            <div class="sums-display" id="sumsDisplay">
+                <h3>Horizontal Rows:</h3>
+                <div id="horizontalSums"></div>
+                <h3>Diagonal (NE-SW):</h3>
+                <div id="diagonal1Sums"></div>
+                <h3>Diagonal (NW-SE):</h3>
+                <div id="diagonal2Sums"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="victory" id="victory">
+        <div class="victory-content">
+            <h2>Congratulations!</h2>
+            <p>You solved the Magic Hexagon!</p>
+            <p>All 15 rows sum to 38.</p>
+            <button onclick="document.getElementById('victory').classList.remove('show')">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Cell positions (row, col offset) for hexagonal grid layout
+        // Layout:    0   1   2
+        //          3   4   5   6
+        //        7   8   9  10  11
+        //         12  13  14  15
+        //          16  17  18
+
+        const hexWidth = 70;
+        const hexHeight = 80;
+        const horizontalSpacing = 75;
+        const verticalSpacing = 60;
+
+        const cellPositions = [
+            // Row 0 (3 cells)
+            { row: 0, col: 0 },
+            { row: 0, col: 1 },
+            { row: 0, col: 2 },
+            // Row 1 (4 cells)
+            { row: 1, col: 0 },
+            { row: 1, col: 1 },
+            { row: 1, col: 2 },
+            { row: 1, col: 3 },
+            // Row 2 (5 cells)
+            { row: 2, col: 0 },
+            { row: 2, col: 1 },
+            { row: 2, col: 2 },
+            { row: 2, col: 3 },
+            { row: 2, col: 4 },
+            // Row 3 (4 cells)
+            { row: 3, col: 0 },
+            { row: 3, col: 1 },
+            { row: 3, col: 2 },
+            { row: 3, col: 3 },
+            // Row 4 (3 cells)
+            { row: 4, col: 0 },
+            { row: 4, col: 1 },
+            { row: 4, col: 2 },
+        ];
+
+        // Row offsets for centering (based on max width of 5)
+        const rowOffsets = [1, 0.5, 0, 0.5, 1];
+
+        // Define all 15 rows that must sum to 38
+        const rows = {
+            horizontal: [
+                [0, 1, 2],
+                [3, 4, 5, 6],
+                [7, 8, 9, 10, 11],
+                [12, 13, 14, 15],
+                [16, 17, 18]
+            ],
+            diagonal1: [ // NW to SE (going down-right)
+                [0, 3, 7],
+                [1, 4, 8, 12],
+                [2, 5, 9, 13, 16],
+                [6, 10, 14, 17],
+                [11, 15, 18]
+            ],
+            diagonal2: [ // NE to SW (going down-left)
+                [2, 6, 11],
+                [1, 5, 10, 15],
+                [0, 4, 9, 14, 18],
+                [3, 8, 13, 17],
+                [7, 12, 16]
+            ]
+        };
+
+        // Game state
+        let cells = new Array(19).fill(null);
+        let selectedCell = null;
+        let showSums = false;
+        let showCorrect = false;
+
+        // Initialize grid
+        function initGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            cellPositions.forEach((pos, index) => {
+                const x = (pos.col + rowOffsets[pos.row]) * horizontalSpacing + 50;
+                const y = pos.row * verticalSpacing + 20;
+
+                // Border element
+                const border = document.createElement('div');
+                border.className = 'hex-border';
+                border.style.left = (x - 2) + 'px';
+                border.style.top = (y - 2) + 'px';
+                grid.appendChild(border);
+
+                // Hex cell
+                const hex = document.createElement('div');
+                hex.className = 'hex';
+                hex.id = 'cell-' + index;
+                hex.style.left = x + 'px';
+                hex.style.top = y + 'px';
+                hex.onclick = () => handleCellClick(index);
+                grid.appendChild(hex);
+            });
+        }
+
+        // Initialize unused numbers panel
+        function initUnused() {
+            const unused = document.getElementById('unused');
+            unused.innerHTML = '';
+
+            for (let i = 1; i <= 19; i++) {
+                const num = document.createElement('div');
+                num.className = 'unused-num';
+                num.id = 'unused-' + i;
+                num.textContent = i;
+                num.onclick = () => handleUnusedClick(i);
+                unused.appendChild(num);
+            }
+        }
+
+        // Handle clicking on a cell
+        function handleCellClick(index) {
+            // If cell has a number, clear it
+            if (cells[index] !== null) {
+                cells[index] = null;
+                updateDisplay();
+                return;
+            }
+
+            // Otherwise select/deselect
+            if (selectedCell === index) {
+                selectedCell = null;
+            } else {
+                selectedCell = index;
+            }
+            updateDisplay();
+        }
+
+        // Handle clicking on unused number
+        function handleUnusedClick(num) {
+            if (selectedCell === null) return;
+            if (cells.includes(num)) return; // Already used
+
+            cells[selectedCell] = num;
+            selectedCell = null;
+            updateDisplay();
+            checkVictory();
+        }
+
+        // Handle keyboard input
+        document.addEventListener('keydown', (e) => {
+            if (selectedCell === null) return;
+
+            // Handle number keys
+            const key = e.key;
+            if (key >= '0' && key <= '9') {
+                handleNumberInput(key);
+            } else if (key === 'Backspace' || key === 'Delete') {
+                cells[selectedCell] = null;
+                updateDisplay();
+            } else if (key === 'Escape') {
+                selectedCell = null;
+                updateDisplay();
+            }
+        });
+
+        let inputBuffer = '';
+        let inputTimeout = null;
+
+        function handleNumberInput(digit) {
+            clearTimeout(inputTimeout);
+            inputBuffer += digit;
+
+            inputTimeout = setTimeout(() => {
+                const num = parseInt(inputBuffer);
+                inputBuffer = '';
+
+                if (num >= 1 && num <= 19 && !cells.includes(num)) {
+                    cells[selectedCell] = num;
+                    selectedCell = null;
+                    updateDisplay();
+                    checkVictory();
+                }
+            }, 300);
+        }
+
+        // Update the display
+        function updateDisplay() {
+            // Update cells
+            const correctCells = new Set();
+            if (showCorrect) {
+                getAllRows().forEach(row => {
+                    if (isRowComplete(row) && getRowSum(row) === 38) {
+                        row.forEach(i => correctCells.add(i));
+                    }
+                });
+            }
+
+            for (let i = 0; i < 19; i++) {
+                const cell = document.getElementById('cell-' + i);
+                cell.textContent = cells[i] || '';
+                cell.classList.toggle('selected', selectedCell === i);
+                cell.classList.toggle('filled', cells[i] !== null);
+                cell.classList.toggle('correct-row', correctCells.has(i) && cells[i] !== null);
+            }
+
+            // Update unused numbers
+            for (let i = 1; i <= 19; i++) {
+                const num = document.getElementById('unused-' + i);
+                num.classList.toggle('used', cells.includes(i));
+            }
+
+            // Update sums display
+            updateSumsDisplay();
+        }
+
+        function getAllRows() {
+            return [...rows.horizontal, ...rows.diagonal1, ...rows.diagonal2];
+        }
+
+        function getRowSum(row) {
+            return row.reduce((sum, i) => sum + (cells[i] || 0), 0);
+        }
+
+        function isRowComplete(row) {
+            return row.every(i => cells[i] !== null);
+        }
+
+        function updateSumsDisplay() {
+            const display = document.getElementById('sumsDisplay');
+            display.classList.toggle('visible', showSums);
+
+            if (!showSums) return;
+
+            function formatRow(row, index) {
+                const sum = getRowSum(row);
+                const complete = isRowComplete(row);
+                const correct = complete && sum === 38;
+                const values = row.map(i => cells[i] !== null ? cells[i].toString().padStart(2) : '__').join(' + ');
+                const className = correct ? 'correct' : 'incorrect';
+                return `<div class="sum-row ${className}">${values} = ${complete ? sum : '?'}</div>`;
+            }
+
+            document.getElementById('horizontalSums').innerHTML =
+                rows.horizontal.map((r, i) => formatRow(r, i)).join('');
+            document.getElementById('diagonal1Sums').innerHTML =
+                rows.diagonal1.map((r, i) => formatRow(r, i)).join('');
+            document.getElementById('diagonal2Sums').innerHTML =
+                rows.diagonal2.map((r, i) => formatRow(r, i)).join('');
+        }
+
+        function checkVictory() {
+            // Check if all cells filled
+            if (cells.includes(null)) return;
+
+            // Check all rows sum to 38
+            const allRows = getAllRows();
+            const allCorrect = allRows.every(row => getRowSum(row) === 38);
+
+            if (allCorrect) {
+                document.getElementById('victory').classList.add('show');
+            }
+        }
+
+        // Button handlers
+        document.getElementById('showSumsBtn').onclick = function () {
+            showSums = !showSums;
+            this.classList.toggle('active', showSums);
+            updateDisplay();
+        };
+
+        document.getElementById('showCorrectBtn').onclick = function () {
+            showCorrect = !showCorrect;
+            this.classList.toggle('active', showCorrect);
+            updateDisplay();
+        };
+
+        document.getElementById('clearAllBtn').onclick = function () {
+            cells = new Array(19).fill(null);
+            selectedCell = null;
+            updateDisplay();
+        };
+
+        // Initialize
+        initGrid();
+        initUnused();
+        updateDisplay();
+    </script>
+</body>
+
+</html>
