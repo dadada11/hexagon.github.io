@@ -7,7 +7,8 @@
     <title>Magic Hexagon Puzzle</title>
     <style>
         /* Theme: Earth (default) */
-        :root, [data-theme="earth"] {
+        :root,
+        [data-theme="earth"] {
             --bg-gradient: linear-gradient(135deg, #5c6b4a 0%, #4a5a3a 25%, #6b5d4a 50%, #5a4d3a 75%, #4a5c3a 100%);
             --title-color: #f5f0e1;
             --text-color: #e8e0cc;
@@ -204,7 +205,7 @@
             text-align: center;
             color: var(--title-color);
             margin-bottom: 20px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         .container {
@@ -428,7 +429,7 @@
             border-radius: 16px;
             text-align: center;
             border: 3px solid var(--victory-border);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
 
         .victory-content h2 {
@@ -464,7 +465,7 @@
             margin-bottom: 12px;
             font-size: 18px;
             font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
             line-height: 1.5;
             max-width: 700px;
             margin-left: auto;
@@ -518,15 +519,15 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
 
         .theme-btn:hover {
             transform: scale(1.15);
-            border-color: rgba(255,255,255,0.6);
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .theme-btn.active {
@@ -564,7 +565,8 @@
         <div class="for">For: My Dear Thatha</div>
     </div>
     <h1>Magic Hexagon Puzzle</h1>
-    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click a number from the box. Click a filled hexagon to clear it. Use arrow keys to move across the board.</p>
+    <p class="instructions">Click a hexagon to select it, then type a number (1-19) or click from the box. Type again to
+        replace. Use arrow keys to navigate, Backspace to clear.</p>
     <p class="instructions goal">Goal: Make all 15 rows sum to 38</p>
 
     <div class="container">
@@ -576,7 +578,7 @@
                 <div class="number-grid" id="unused"></div>
                 <div class="controls">
                     <button id="showSumsBtn">Show Sums</button>
-                    <button id="showCorrectBtn">Highlight Correct</button>
+                    <button id="showCorrectBtn">Highlight 38 Sums</button>
                     <button id="clearAllBtn">Clear All</button>
                 </div>
             </div>
@@ -706,42 +708,61 @@
         }
 
         // Initialize edge sum labels
+        // Strategy: Place sums at the END of each row, in the direction the row extends
+        // - Horizontal: RIGHT of last cell (row extends left→right)
+        // - Diagonal1 (NW→SE): BOTTOM-LEFT of last cell (row extends down-right)
+        // - Diagonal2 (NE→SW): BOTTOM-RIGHT of last cell (row extends down-left)
+        // Small offsets applied where multiple rows end at the same cell
         function initEdgeSums() {
             const grid = document.getElementById('grid');
 
-            // Horizontal rows - place on RIGHT side
+            // Horizontal rows - place to the RIGHT of the last cell
+            // Last cells: 2, 6, 11, 15, 18
+            // Overlaps: cell 11 (with D2), cell 15 (with D2), cell 18 (with D1, D2)
             rows.horizontal.forEach((row, i) => {
                 const lastCell = row[row.length - 1];
                 const pos = getCellPosition(lastCell);
                 const label = document.createElement('div');
-                label.className = 'edge-sum';
+                label.className = 'edge-sum horizontal-sum';
                 label.id = `sum-h-${i}`;
+                // Position to the right, vertically centered on the cell
                 label.style.left = (pos.x + hexWidth + 8) + 'px';
                 label.style.top = (pos.y + hexHeight / 2 - 12) + 'px';
                 grid.appendChild(label);
             });
 
-            // Diagonal1 (NW to SE) - place at BOTTOM-LEFT of row
+            // Diagonal1 (NW to SE) - place BELOW-LEFT of last cell
+            // Last cells: 7, 12, 16, 17, 18
             rows.diagonal1.forEach((row, i) => {
                 const lastCell = row[row.length - 1];
                 const pos = getCellPosition(lastCell);
                 const label = document.createElement('div');
-                label.className = 'edge-sum';
+                label.className = 'edge-sum diagonal1-sum';
                 label.id = `sum-d1-${i}`;
+                // Position below and to the left
                 label.style.left = (pos.x - 5) + 'px';
-                label.style.top = (pos.y + hexHeight - 5) + 'px';
+                label.style.top = (pos.y + hexHeight) + 'px';
                 grid.appendChild(label);
             });
 
-            // Diagonal2 (NE to SW) - place at BOTTOM-RIGHT of row
+            // Diagonal2 (NE to SW) - place BOTTOM-RIGHT of last cell
+            // Last cells: 11, 15, 18, 17, 16
             rows.diagonal2.forEach((row, i) => {
                 const lastCell = row[row.length - 1];
                 const pos = getCellPosition(lastCell);
                 const label = document.createElement('div');
-                label.className = 'edge-sum';
+                label.className = 'edge-sum diagonal2-sum';
                 label.id = `sum-d2-${i}`;
-                label.style.left = (pos.x + hexWidth - 20) + 'px';
-                label.style.top = (pos.y + hexHeight - 5) + 'px';
+
+                // Cells 11, 15 are on the right edge - position below the horizontal sum
+                if (lastCell === 11 || lastCell === 15) {
+                    label.style.left = (pos.x + hexWidth + 8) + 'px';
+                    label.style.top = (pos.y + hexHeight - 15) + 'px';
+                } else {
+                    // Bottom cells (18, 17, 16) - position below-right
+                    label.style.left = (pos.x + hexWidth - 25) + 'px';
+                    label.style.top = (pos.y + hexHeight) + 'px';
+                }
                 grid.appendChild(label);
             });
         }
