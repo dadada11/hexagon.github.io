@@ -763,32 +763,30 @@
 
         // Handle clicking on a cell
         function handleCellClick(index) {
-            // If cell has a number, clear it
-            if (cells[index] !== null) {
-                cells[index] = null;
-                lastPosition = index; // Remember position
+            // If clicking the already selected cell, deselect it
+            if (selectedCell === index) {
+                selectedCell = null;
                 updateDisplay();
                 return;
             }
 
-            // Otherwise select/deselect
-            if (selectedCell === index) {
-                selectedCell = null;
-            } else {
-                selectedCell = index;
-                lastPosition = index; // Remember position
-            }
+            // Select the cell (whether empty or filled)
+            selectedCell = index;
+            lastPosition = index;
             updateDisplay();
         }
 
         // Handle clicking on unused number
         function handleUnusedClick(num) {
             if (selectedCell === null) return;
-            if (cells.includes(num)) return; // Already used
+
+            // Check if number is used in a DIFFERENT cell
+            const usedIndex = cells.indexOf(num);
+            if (usedIndex !== -1 && usedIndex !== selectedCell) return;
 
             cells[selectedCell] = num;
-            lastPosition = selectedCell; // Remember position
-            selectedCell = null;
+            lastPosition = selectedCell;
+            // Keep cell selected for easy re-editing
             updateDisplay();
             checkVictory();
         }
@@ -898,10 +896,14 @@
                 const num = parseInt(inputBuffer);
                 inputBuffer = '';
 
-                if (num >= 1 && num <= 19 && !cells.includes(num)) {
+                if (num >= 1 && num <= 19) {
+                    // Check if number is used in a DIFFERENT cell
+                    const usedIndex = cells.indexOf(num);
+                    if (usedIndex !== -1 && usedIndex !== selectedCell) return;
+
                     cells[selectedCell] = num;
-                    lastPosition = selectedCell; // Remember where we entered
-                    selectedCell = null;
+                    lastPosition = selectedCell;
+                    // Keep cell selected for easy re-editing
                     updateDisplay();
                     checkVictory();
                 }
